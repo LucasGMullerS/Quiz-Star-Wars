@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Descubra de qual lado da Força você está - Jedi ou Sith. Teste interativo de Star Wars.">
+    <title>Star Wars - Qual Lado da Força?</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="manifest" href="fotos/site.webmanifest">
+</head>
+
+<body>
+    <!-- Canvas para partículas/estrelas -->
+    <canvas id="starfield"></canvas>
+
+    <!-- Intro do Star Wars -->
+    <div class="intro-overlay" id="intro-overlay">
+        <div class="intro-content">
+            <p class="intro-text">Há muito tempo, em uma galáxia muito, muito distante...</p>
+            <h1 class="intro-logo">STAR<br>WARS</h1>
+            <p class="intro-subtitle">O Teste da Força</p>
+        </div>
+        <button class="btn-intro" id="btn-start">INICIAR TESTE</button>
+        <button class="btn-skip" id="btn-skip-intro">PULAR ABERTURA >> </button>
+    </div>
+
+    <!-- Crawl de abertura (estilo Star Wars) -->
+    <div class="crawl-container" id="crawl-container">
+        <div class="crawl">
+            <p class="crawl-episode">Episódio IV</p>
+            <h2 class="crawl-title">UM NOVO TESTE</h2>
+            <p>É um período de grande agitação na galáxia. As forças da ordem e do caos disputam o destino de todos os
+                seres vivos.</p>
+            <p>Você foi chamado para descobrir onde sua alma realmente pertence. O Conselho Jedi aguarda sua resposta,
+                enquanto o Lado Sombrio sussurra promessas de poder absoluto.</p>
+            <p>Responda às perguntas a seguir com honestidade. A Força flui através de você, e ela revelará a verdade
+                que seu coração tenta esconder...</p>
+            <p class="crawl-final">Que a Força esteja com você.</p>
+        </div>
+    </div>
+
+    <!-- Quiz Principal -->
+    <main class="quiz-container" id="quiz-container">
+        <div class="container">
+            <!-- Sabre de Luz (Barra de Progresso) -->
+            <div class="lightsaber-container">
+                <div class="lightsaber" id="lightsaber">
+                    <!-- Cabo do Sabre -->
+                    <div class="lightsaber-hilt">
+                        <div class="hilt-pommel"></div>
+                        <div class="hilt-grip"></div>
+                        <div class="hilt-switch"></div>
+                        <div class="hilt-emitter"></div>
+                    </div>
+                    <!-- Lâmina -->
+                    <div class="lightsaber-blade" id="lightsaber-blade">
+                        <div class="blade-glow"></div>
+                    </div>
+                </div>
+                <span class="progress-text" id="progress-text">1/10</span>
+            </div>
+
+            <!-- Pergunta -->
+            <div class="question-card" id="question-card">
+                <div class="question-number" id="question-number">Pergunta 1</div>
+                <h2 class="question-text" id="question-text">Carregando...</h2>
+
+                <div class="answers-grid" id="answers-grid">
+                    <!-- Botões gerados via JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Resultado -->
+    <section class="result-container" id="result-container">
+        <div class="container result-content">
+            <div class="result-icon" id="result-icon"></div>
+            <h1 class="result-title" id="result-title"></h1>
+            <div class="result-divider"></div>
+            <p class="result-description" id="result-description"></p>
+            <div class="result-stats" id="result-stats"></div>
+            <div class="result-actions">
+                <button class="btn-restart" id="btn-restart">🔙 Refazer Teste</button>
+                <button class="btn-share" id="btn-share">📤 Compartilhar</button>
+            </div>
+            <div class="force-quote" id="force-quote"></div>
+        </div>
+        <!-- Efeito visual do lado -->
+        <div class="result-bg-effect" id="result-bg-effect"></div>
+    </section>
+
+    <!-- Efeito de transição -->
+    <div class="transition-flash" id="transition-flash"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
