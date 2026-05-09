@@ -1,3 +1,10 @@
+// ===== FIX MOBILE AUDIO =====
+document.addEventListener('touchstart', () => {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}, { once: true });
+
 // ===== CONFIGURAÇÃO DAS PERGUNTAS =====
 const questions = [
     {
@@ -194,8 +201,12 @@ animateStars();
 // ===== SOM (WEB AUDIO API - SABRE DE LUZ) =====
 let audioContext;
 function initAudio() {
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    try {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    } catch(e) {
+        console.log('Audio não disponível:', e);
     }
 }
 
