@@ -1,10 +1,3 @@
-// ===== FIX MOBILE AUDIO =====
-document.addEventListener('touchstart', () => {
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-}, { once: true });
-
 // ===== CONFIGURAÇÃO DAS PERGUNTAS =====
 const questions = [
     {
@@ -201,12 +194,8 @@ animateStars();
 // ===== SOM (WEB AUDIO API - SABRE DE LUZ) =====
 let audioContext;
 function initAudio() {
-    try {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-    } catch(e) {
-        console.log('Audio não disponível:', e);
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
 }
 
@@ -546,15 +535,14 @@ btnRestart.addEventListener('click', () => {
 btnShare.addEventListener('click', () => {
     const isJedi = jediScore >= sithScore;
     const side = isJedi ? 'LADO LUMINOSO (Jedi) ⚔️' : 'LADO SOMBRIO (Sith) 🔴';
-    const url = `https://lucasgmullers.github.io/Quiz-Star-Wars/`;
-    const text = `Fiz o teste da Força de Star Wars e descobri que estou no ${side}! Faça você também: ${url}`;
+    const text = `Fiz o teste da Força de Star Wars e descobri que estou no ${side}! Faça você também.`;
 
     if (navigator.share) {
         navigator.share({
             title: 'Star Wars - Teste da Força',
             text: text,
-            url: url
-        }).catch(() => {});
+            url: window.location.href
+        }).catch(() => { });
     } else {
         navigator.clipboard.writeText(text).then(() => {
             const originalText = btnShare.textContent;
@@ -567,6 +555,7 @@ btnShare.addEventListener('click', () => {
         });
     }
 });
+
 // ===== NAVEGAÇÃO POR TECLADO =====
 document.addEventListener('keydown', (e) => {
     if (!quizContainer.classList.contains('active')) return;
