@@ -535,6 +535,7 @@ btnRestart.addEventListener('click', () => {
 btnShare.addEventListener('click', () => {
     const isJedi = jediScore >= sithScore;
     const side = isJedi ? 'LADO LUMINOSO (Jedi) ⚔️' : 'LADO SOMBRIO (Sith) 🔴';
+    const url = https: `//lucasgmullers.github.io/Quiz-Star-Wars/`
     const text = `Fiz o teste da Força de Star Wars e descobri que estou no ${side}! Faça você também.`;
 
     if (navigator.share) {
