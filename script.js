@@ -535,15 +535,15 @@ btnRestart.addEventListener('click', () => {
 btnShare.addEventListener('click', () => {
     const isJedi = jediScore >= sithScore;
     const side = isJedi ? 'LADO LUMINOSO (Jedi) ⚔️' : 'LADO SOMBRIO (Sith) 🔴';
-    const url = https: `//lucasgmullers.github.io/Quiz-Star-Wars/`
-    const text = `Fiz o teste da Força de Star Wars e descobri que estou no ${side}! Faça você também.`;
+    const url = `https://lucasgmullers.github.io/Quiz-Star-Wars/`;
+    const text = `Fiz o teste da Força de Star Wars e descobri que estou no ${side}! Faça você também: ${url}`;
 
     if (navigator.share) {
         navigator.share({
             title: 'Star Wars - Teste da Força',
             text: text,
-            url: window.location.href
-        }).catch(() => { });
+            url: url
+        }).catch(() => {});
     } else {
         navigator.clipboard.writeText(text).then(() => {
             const originalText = btnShare.textContent;
@@ -556,7 +556,6 @@ btnShare.addEventListener('click', () => {
         });
     }
 });
-
 // ===== NAVEGAÇÃO POR TECLADO =====
 document.addEventListener('keydown', (e) => {
     if (!quizContainer.classList.contains('active')) return;
