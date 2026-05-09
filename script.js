@@ -161,7 +161,6 @@ function animateStars() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     stars.forEach(star => {
-        // Movimento de warp speed durante o quiz
         if (quizContainer.classList.contains('active')) {
             ctx.beginPath();
             ctx.moveTo(star.x, star.y);
@@ -191,11 +190,25 @@ function animateStars() {
 }
 animateStars();
 
-// ===== SOM (WEB AUDIO API - SABRE DE LUZ) =====
+// ===== SOM (WEB AUDIO API) =====
 let audioContext;
-function initAudio() {
+
+// FIX MOBILE — inicia o audio no primeiro toque
+// Celulares bloqueiam audio sem interação do usuario
+document.addEventListener('touchstart', () => {
     if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}, { once: true }); // { once: true } = executa só uma vez
+
+function initAudio() {
+    try {
+        // try/catch evita que erro de audio quebre o quiz inteiro
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    } catch(e) {
+        console.log('Audio não disponível:', e);
     }
 }
 
@@ -203,18 +216,14 @@ function playLightsaberSound(isJedi) {
     initAudio();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-
     oscillator.type = 'sawtooth';
     oscillator.frequency.setValueAtTime(isJedi ? 400 : 200, audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(isJedi ? 800 : 150, audioContext.currentTime + 0.3);
-
     gainNode.gain.setValueAtTime(0, audioContext.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.1);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
     oscillator.start();
     oscillator.stop(audioContext.currentTime + 0.5);
 }
@@ -223,87 +232,65 @@ function playSelectSound() {
     initAudio();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-
     oscillator.type = 'sine';
     oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.1);
-
     gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
-
     oscillator.start();
     oscillator.stop(audioContext.currentTime + 0.2);
 }
 
-// ===== MÚSICA STAR WARS (Tema Principal) =====
+// ===== MÚSICA STAR WARS =====
 let starWarsMusicInterval = null;
 
 function playStarWarsTheme() {
     if (!audioContext) initAudio();
-
-    // Notas do tema Star Wars (frequências em Hz)
     const notes = [
-        { freq: 466.16, duration: 0.7 }, // B♭
-        { freq: 466.16, duration: 0.7 }, // B♭
-        { freq: 466.16, duration: 0.7 }, // B♭
-        { freq: 349.23, duration: 0.45 }, // F
-        { freq: 466.16, duration: 0.25 }, // B♭
-        { freq: 349.23, duration: 0.45 }, // F
-        { freq: 466.16, duration: 0.25 }, // B♭
-        { freq: 466.16, duration: 0.7 }, // B♭
-        { freq: 466.16, duration: 0.7 }, // B♭
-        { freq: 466.16, duration: 0.7 }, // B♭
-        { freq: 392.00, duration: 0.45 }, // G
-        { freq: 466.16, duration: 0.25 }, // B♭
-        { freq: 392.00, duration: 0.25 }, // G
-        { freq: 466.16, duration: 0.25 }, // B♭
-        { freq: 466.16, duration: 0.7 }, // B♭
-        { freq: 466.16, duration: 0.7 }, // B♭
-        { freq: 466.16, duration: 0.7 }, // B♭
-        { freq: 415.30, duration: 0.45 }, // A♭
-        { freq: 466.16, duration: 0.25 }, // B♭
-        { freq: 415.30, duration: 0.45 }, // A♭
-        { freq: 466.16, duration: 0.25 }, // B♭
+        { freq: 466.16, duration: 0.7 },
+        { freq: 466.16, duration: 0.7 },
+        { freq: 466.16, duration: 0.7 },
+        { freq: 349.23, duration: 0.45 },
+        { freq: 466.16, duration: 0.25 },
+        { freq: 349.23, duration: 0.45 },
+        { freq: 466.16, duration: 0.25 },
+        { freq: 466.16, duration: 0.7 },
+        { freq: 466.16, duration: 0.7 },
+        { freq: 466.16, duration: 0.7 },
+        { freq: 392.00, duration: 0.45 },
+        { freq: 466.16, duration: 0.25 },
+        { freq: 392.00, duration: 0.25 },
+        { freq: 466.16, duration: 0.25 },
+        { freq: 466.16, duration: 0.7 },
+        { freq: 466.16, duration: 0.7 },
+        { freq: 466.16, duration: 0.7 },
+        { freq: 415.30, duration: 0.45 },
+        { freq: 466.16, duration: 0.25 },
+        { freq: 415.30, duration: 0.45 },
+        { freq: 466.16, duration: 0.25 },
     ];
-
     let noteIndex = 0;
     let startTime = audioContext.currentTime + 0.1;
-
     function playNextNote() {
-        if (noteIndex >= notes.length) {
-            noteIndex = 0; // Loop infinito até parar
-        }
-
+        if (noteIndex >= notes.length) noteIndex = 0;
         const note = notes[noteIndex];
         const osc = audioContext.createOscillator();
         const gain = audioContext.createGain();
-
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(note.freq, startTime);
-
         gain.gain.setValueAtTime(0.08, startTime);
         gain.gain.exponentialRampToValueAtTime(0.001, startTime + note.duration * 0.9);
-
         osc.connect(gain);
         gain.connect(audioContext.destination);
-
         osc.start(startTime);
         osc.stop(startTime + note.duration);
-
         startTime += note.duration;
         noteIndex++;
     }
-
-    // Toca a primeira nota imediatamente
     playNextNote();
-
-    // Continua tocando em loop
-    starWarsMusicInterval = setInterval(() => {
-        playNextNote();
-    }, 400); // Intervalo aproximado entre notas
+    starWarsMusicInterval = setInterval(() => { playNextNote(); }, 400);
 }
 
 function stopStarWarsTheme() {
@@ -320,19 +307,16 @@ function startQuiz() {
     initAudio();
     playSelectSound();
     introOverlay.classList.add('hidden');
-
-    // Crawl mais rápido (5s)
     setTimeout(() => {
         crawlContainer.classList.add('active');
         playStarWarsTheme();
     }, 1000);
-
     setTimeout(() => {
         crawlContainer.classList.remove('active');
         stopStarWarsTheme();
         quizContainer.classList.add('active');
         loadQuestion();
-    }, 10000); // Crawl total = 18s para leitura um pouco mais rápida
+    }, 10000);
 }
 
 btnStart.addEventListener('click', startQuiz);
@@ -347,7 +331,7 @@ btnSkipIntro.addEventListener('click', () => {
     loadQuestion();
 });
 
-// ===== ATUALIZAR SABRE DE LUZ =====
+// ===== SABRE DE LUZ =====
 const lightsaber = document.getElementById('lightsaber');
 const lightsaberBlade = document.getElementById('lightsaber-blade');
 
@@ -355,32 +339,24 @@ function updateLightsaber(progressPercent) {
     const maxWidth = Math.min(500, window.innerWidth * 0.55);
     const bladeWidth = (progressPercent / 100) * maxWidth;
     lightsaberBlade.style.width = `${bladeWidth}px`;
-
-    // Definir cor baseada na proporção Jedi vs Sith
     const total = jediScore + sithScore;
     if (total === 0) {
-        // Início - neutro (azul claro)
         lightsaber.className = '';
         lightsaberBlade.className = 'lightsaber-blade';
     } else {
         const jediRatio = jediScore / total;
         lightsaber.className = '';
         lightsaberBlade.className = 'lightsaber-blade';
-
-        // Empate exato (1x1, 2x2, 3x3, 4x4, 5x5) -> Roxo "Sensitiva à Força"
         if (jediScore === sithScore) {
             lightsaber.classList.add('balance');
             lightsaberBlade.classList.add('balance');
         } else if (jediRatio > 0.6) {
-            // Mais Jedi -> Azul
             lightsaber.classList.add('jedi');
             lightsaberBlade.classList.add('jedi');
         } else if (jediRatio < 0.4) {
-            // Mais Sith -> Vermelho
             lightsaber.classList.add('sith');
             lightsaberBlade.classList.add('sith');
         } else {
-            // Equilíbrio -> Roxo (misto)
             lightsaber.classList.add('balance');
             lightsaberBlade.classList.add('balance');
         }
@@ -400,14 +376,11 @@ function shuffleArray(array) {
 function loadQuestion() {
     const q = questions[currentQuestion];
     const shuffledAnswers = shuffleArray(q.answers);
-
     questionNumber.textContent = `Pergunta ${currentQuestion + 1}`;
     questionText.textContent = q.question;
-
     const progress = ((currentQuestion + 1) / questions.length) * 100;
     updateLightsaber(progress);
     progressText.textContent = `${currentQuestion + 1}/${questions.length}`;
-
     const labels = ['A', 'B', 'C', 'D'];
     answersGrid.innerHTML = '';
     shuffledAnswers.forEach((answer, index) => {
@@ -417,38 +390,22 @@ function loadQuestion() {
         btn.addEventListener('click', () => selectAnswer(answer.side, btn));
         answersGrid.appendChild(btn);
     });
-
-    // Re-trigger animation
     questionCard.style.animation = 'none';
-    questionCard.offsetHeight; // Trigger reflow
+    questionCard.offsetHeight;
     questionCard.style.animation = 'fadeInScale 0.5s ease';
 }
 
 // ===== SELECIONAR RESPOSTA =====
 function selectAnswer(side, btn) {
     playSelectSound();
-
-    // Visual feedback
     btn.classList.add(side === 'jedi' ? 'selected-jedi' : 'selected-sith');
-
-    // Disable all buttons
     document.querySelectorAll('.answer-btn').forEach(b => b.style.pointerEvents = 'none');
-
-    // Update score
     if (side === 'jedi') jediScore++;
     else sithScore++;
-
-    // Atualizar sabre após cada resposta
     const currentProgress = ((currentQuestion + 1) / questions.length) * 100;
     updateLightsaber(currentProgress);
-
-    // Flash transition
     transitionFlash.className = `transition-flash active ${side}`;
-    setTimeout(() => {
-        transitionFlash.className = 'transition-flash';
-    }, 300);
-
-    // Next question or result (mais rápido)
+    setTimeout(() => { transitionFlash.className = 'transition-flash'; }, 300);
     setTimeout(() => {
         currentQuestion++;
         if (currentQuestion < questions.length) {
@@ -462,20 +419,12 @@ function selectAnswer(side, btn) {
 // ===== MOSTRAR RESULTADO =====
 function showResult() {
     quizContainer.classList.remove('active');
-
     const totalScore = jediScore + sithScore;
-
-    // Verificar se é empate exato (Sensitiva à Força: 1x1, 2x2, 3x3, 4x4, 5x5)
     const isExactTie = jediScore === sithScore;
     const isJedi = jediScore >= sithScore;
     const side = isExactTie ? 'balance' : (isJedi ? 'jedi' : 'sith');
-
-    // Play lightsaber sound
     setTimeout(() => playLightsaberSound(isJedi), 500);
-
-    // Set result content with lightsaber images
     if (isExactTie) {
-        // Sabre roxo via filtro CSS na imagem azul (hue-rotate + saturate)
         resultIcon.innerHTML = '<img src="bluelightsaber.png" alt="Sabre Roxo" style="height:100px;filter:hue-rotate(270deg) saturate(2);">';
         resultTitle.textContent = 'SENSITIVA À FORÇA';
         resultDescription.textContent = `Você está em perfeito equilíbrio entre o Lado Luminoso e o Lado Sombrio (${jediScore} x ${sithScore}). Sua alma é uma ponte entre a luz e a escuridão. A Força flui através de você de forma única e misteriosa. Você é raro, um verdadeiro enigma cósmico!`;
@@ -488,10 +437,8 @@ function showResult() {
         resultTitle.textContent = 'LADO SOMBRIO';
         resultDescription.textContent = `O Lado Sombrio pulsa em suas veias. Você valoriza o poder, a força de vontade e a determinação acima de tudo. Para você, a ordem é mantida através da força e do medo. Abrace seu destino, pois você tem o potencial para dominar tudo ao seu redor!`;
     }
-
     resultTitle.className = `result-title ${side}`;
     resultDivider.className = `result-divider ${side}`;
-
     resultStats.innerHTML = `
         <div class="stat-result">
             <span class="stat-result-number jedi">${jediScore}</span>
@@ -506,26 +453,19 @@ function showResult() {
             <span class="stat-result-label">Sith</span>
         </div>
     `;
-
     resultBgEffect.className = `result-bg-effect ${side}`;
-
     forceQuote.textContent = `"${forceQuotes[Math.floor(Math.random() * forceQuotes.length)]}"`;
-
-    setTimeout(() => {
-        resultContainer.classList.add('active');
-    }, 300);
+    setTimeout(() => { resultContainer.classList.add('active'); }, 300);
 }
 
 // ===== REINICIAR TESTE =====
 btnRestart.addEventListener('click', () => {
     playSelectSound();
     resultContainer.classList.remove('active');
-
     setTimeout(() => {
         currentQuestion = 0;
         jediScore = 0;
         sithScore = 0;
-
         quizContainer.classList.add('active');
         loadQuestion();
     }, 500);
@@ -536,21 +476,23 @@ btnShare.addEventListener('click', () => {
     const isJedi = jediScore >= sithScore;
     const side = isJedi ? 'LADO LUMINOSO (Jedi) ⚔️' : 'LADO SOMBRIO (Sith) 🔴';
     const url = `https://lucasgmullers.github.io/Quiz-Star-Wars/`;
+
+    // text SEM o url — o navigator.share adiciona o url separado automaticamente
+    // se colocar o url no text E no url fica duplicado!
     const text = `Fiz o teste da Força de Star Wars e descobri que estou no ${side}! Faça você também:`;
 
     if (navigator.share) {
         navigator.share({
             title: 'Star Wars - Teste da Força',
             text: text,
-            url: url
+            url: url  // url separado do text — não duplica
         }).catch(() => {});
     } else {
+        // Fallback para PC — junta text + url manualmente
         navigator.clipboard.writeText(text + ' ' + url).then(() => {
             const originalText = btnShare.textContent;
             btnShare.textContent = '✅ Copiado!';
-            setTimeout(() => {
-                btnShare.textContent = originalText;
-            }, 2000);
+            setTimeout(() => { btnShare.textContent = originalText; }, 2000);
         }).catch(() => {
             alert(text + ' ' + url);
         });
@@ -560,10 +502,8 @@ btnShare.addEventListener('click', () => {
 // ===== NAVEGAÇÃO POR TECLADO =====
 document.addEventListener('keydown', (e) => {
     if (!quizContainer.classList.contains('active')) return;
-
     const keyMap = { 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
     const index = keyMap[e.key.toLowerCase()];
-
     if (index !== undefined) {
         const buttons = document.querySelectorAll('.answer-btn');
         if (buttons[index] && buttons[index].style.pointerEvents !== 'none') {
